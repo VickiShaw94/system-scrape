@@ -9,27 +9,52 @@ using System.Diagnostics;
 namespace ClassLibrary1
 {
 
+    public class Class2 { 
+
+    }
     public class Class1
     {
+        //instantiating class process
+        public static Process externalProcess = new Process();
+ 
+        private static void setFileName(string fileName)
+        {
+            externalProcess.StartInfo.FileName = fileName;
+        }               
+
+        /**
+         * Sets Arguments -- string containing the arguments to pass to the target app
+         * specified in setFileName property, default empty string ""
+         *  
+        */
+
+        private static void setArguments(string args)
+        {
+            externalProcess.StartInfo.Arguments += args;
+        }
 
         public static void Main()
         {
 
-            string directoryPath = Directory.GetCurrentDirectory();
-            string[] lines = { Directory.GetCurrentDirectory()};
-            string place =  "C:\\Users\\vs\\Documents\\systemLogs\\";
+            setFileName("msinfo32.exe");
+            //setArguments("/report" + zzz + ".txt");
+            externalProcess.StartInfo.Arguments = "/report zzz.txt";
 
-            Process sysInfoCaptureExternalProcess = new Process();
+            externalProcess.Start();
+
+
+            /*
+            string place =  "C:\\Users\\vs\\Documents\\systemLogs\\";
 
             sysInfoCaptureExternalProcess.StartInfo.UseShellExecute = false;
             sysInfoCaptureExternalProcess.StartInfo.FileName = "msinfo32.exe";
             sysInfoCaptureExternalProcess.StartInfo.Arguments = "/report.txt";
             sysInfoCaptureExternalProcess.StartInfo.WorkingDirectory = place;
             sysInfoCaptureExternalProcess.Start();
-            
             //string place = Directory.GetCurrentDirectory();
             System.IO.File.WriteAllLines(place + "writeLines.txt", lines);
 
+             */   
         }
 
         
