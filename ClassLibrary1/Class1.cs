@@ -24,9 +24,8 @@ namespace ClassLibrary1
             sysInfoCaptureExternalProcess.StartInfo.UseShellExecute = false;
             sysInfoCaptureExternalProcess.StartInfo.FileName = "msinfo32.exe";
             sysInfoCaptureExternalProcess.StartInfo.Arguments = "/report.txt";
-            sysInfoCaptureExternalProcess.StartInfo.WorkingDirectory = directoryPath;
+            sysInfoCaptureExternalProcess.StartInfo.WorkingDirectory = place;
             sysInfoCaptureExternalProcess.Start();
-            sysInfoCaptureExternalProcess.WaitForExit();
             
             //string place = Directory.GetCurrentDirectory();
             System.IO.File.WriteAllLines(place + "writeLines.txt", lines);
