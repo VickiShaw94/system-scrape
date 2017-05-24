@@ -28,9 +28,9 @@ namespace ClassLibrary1
          *  
         */
 
-        private static void setArguments(string args)
+        private static void setSaveLocation(string loc)
         {
-            externalProcess.StartInfo.Arguments += args;
+            externalProcess.StartInfo.WorkingDirectory = loc;
         }
 
         public static void Main()
@@ -40,6 +40,7 @@ namespace ClassLibrary1
             //setArguments("/report" + zzz + ".txt");
             externalProcess.StartInfo.Arguments = "/report zzz.txt";
 
+            setSaveLocation(Directory.GetCurrentDirectory);
             externalProcess.Start();
 
 
