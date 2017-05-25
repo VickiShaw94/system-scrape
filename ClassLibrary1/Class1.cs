@@ -8,7 +8,7 @@ namespace ClassLibrary1
     public class Class1
     {
 
-        private static void retrieveSerial()
+        private static string retrieveSerial()
         {
             ManagementObjectSearcher searcher =
                 new ManagementObjectSearcher("SELECT Product, SerialNumber FROM Win32_BaseBoard");
@@ -17,21 +17,22 @@ namespace ClassLibrary1
             foreach (ManagementObject obj in info)
             {
                 foreach (PropertyData data in obj.Properties)
-                    System.Diagnostics.Debug.WriteLine("{0} = {1}", data.Name, data.Value);
-                //System.Diagnostics.Debug.WriteLine();
+                {
+                    if (data.Name == "SerialNumber")
+                        return (string) data.Value;
+                }
          
             }
-
-            searcher.Dispose();
+            return null;
         }
         public static void Main()
         {
             retrieveSerial();
             Process extProcess = new Process();
             string sysID = Environment.MachineName;
-            //string serialID = retrieveSerial();
+            string serialID = retrieveSerial();
             extProcess.StartInfo.FileName = "msinfo32.exe";
-            extProcess.StartInfo.Arguments = "/report " + @".\" + sysID + ".txt";
+            extProcess.StartInfo.Arguments = "/report " + @".\" + serialID + ".txt";
             extProcess.Start();
         }
     }
