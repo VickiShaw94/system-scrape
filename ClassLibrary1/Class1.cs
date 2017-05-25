@@ -25,15 +25,18 @@ namespace ClassLibrary1
             }
             return null;
         }
-        public static void Main()
+
+        private static void createExternalProcess()
         {
-            retrieveSerial();
             Process extProcess = new Process();
-            string sysID = Environment.MachineName;
             string serialID = retrieveSerial();
             extProcess.StartInfo.FileName = "msinfo32.exe";
             extProcess.StartInfo.Arguments = "/report " + @".\" + serialID + ".txt";
             extProcess.Start();
+        }
+        public static void Main()
+        {
+            createExternalProcess();
         }
     }
 }
