@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.IO;
 using System.Management;
+using System.Management.Automation;
+using System.Runtime.InteropServices;
 
 namespace ClassLibrary1
 {
@@ -9,6 +11,43 @@ namespace ClassLibrary1
     public class Class1
     {
 
+        /// <summary>
+        /// Exports log flags for EvtExportLogs
+        /// </summary>
+        [Flags]
+        private enum EventExportLogFlags
+        {
+            ChannelPath = 1,
+            LogFilePath = 2,
+            TolerateQueryErrors = 0x1000
+        };
+
+        /// <summary>
+        /// Exports specified event log
+        /// </summary>
+        /// <param name="sessionHandle"> Null pointer </param>
+        /// <param name="path"> specify which event log</param>
+        /// <param name="query"> what type of events in the log </param>
+        /// <param name="targetPath"> where do you want to save it to </param>
+        /// <param name="flags"> default specified by enum EventExportLogFlags</param>
+        /// <returns></returns>
+        [DllImport(@"wevtapi.dll",
+            CallingConvention = CallingConvention.Winapi,
+            CharSet = CharSet.Auto,
+            SetLastError = true)]
+        private static extern bool EvtExportLog(
+            IntPtr sessionHandle,
+            string path,
+            string query,
+            string targetPath,
+            [MarshalAs(UnmanagedType.I4)] EventExportLogFlags flags);
+
+
+
+        /// <summary>
+        /// Method returns machine serial number in string
+        /// </summary>
+        /// <returns> string of serial number </returns> 
         private static string retrieveSerial()
         {
             ManagementObjectSearcher searcher =
@@ -20,12 +59,17 @@ namespace ClassLibrary1
                 foreach (PropertyData data in obj.Properties)
                 {
                     if (data.Name == "SerialNumber")
-                        return (string) data.Value;
+                        return (string)data.Value;
                 }
-         
+
             }
             return null;
         }
+
+        /// <summary>
+        /// Executes external process to call MsInfo32.exe, saves the information to
+        /// txt file with serial number name
+        /// </summary>
 
         private static void extractMsInfo32()
         {
@@ -36,36 +80,14 @@ namespace ClassLibrary1
             extProcess.Start();
         }
 
-        private static void writeWinEventLog(string fileName)
-        {
-            string path = @".\" + fileName;
-            EventLog evtLog = new EventLog("System"); evtLog.MachineName = "."; // dot is local machine 
-
-            //create file if doesn't currently exist
-            if (!File.Exists(path))
-            {
-                File.Create(path);
-
-            }
-            
-            foreach (EventLogEntry evtEntry in evtLog.Entries)
-            {
-                //pipe output to text file
-                //txtfile.writeLine(evtEntry.Message);
-                //System.IO.File. WriteAllText(@".\" + fileName, evtEntry.Message);
-                using (StreamWriter file = new StreamWriter(@".\" + fileName, true))
-                {
-                    file.WriteLine(evtEntry.Message);
-                }
-
-            }
-            evtLog.Close();
-        }
 
         public static void Main()
         {
-            writeWinEventLog("try1.txt");
-            extractMsInfo32();
+
+            EvtExportLog(IntPtr.Zero, "System", "*", @".\sys.evtx", EventExportLogFlags.ChannelPath);
+            //getEventLog("SYSTEMEVENTLOG");
+            //writeWinEventLog("try1.txt");
+            //extractMsInfo32();
         }
     }
 }

@@ -3,3 +3,4 @@ c:\users\vs\documents\visual studio 2015\Projects\ClassLibrary1\ClassLibrary1\ob
 c:\users\vs\documents\visual studio 2015\Projects\ClassLibrary1\ClassLibrary1\obj\Debug\ClassLibrary1.pdb
 c:\users\vs\documents\visual studio 2015\Projects\ClassLibrary1\ClassLibrary1\bin\Debug\ClassLibrary1.exe
 c:\users\vs\documents\visual studio 2015\Projects\ClassLibrary1\ClassLibrary1\obj\Debug\ClassLibrary1.exe
+c:\users\vs\documents\visual studio 2015\Projects\ClassLibrary1\ClassLibrary1\bin\Debug\System.Management.Automation.dll
