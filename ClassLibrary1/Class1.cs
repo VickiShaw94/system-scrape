@@ -47,7 +47,7 @@ namespace ClassLibrary1
         /// Method returns machine serial number in string
         /// </summary>
         /// <returns> string of serial number </returns> 
-        private static string retrieveSerial()
+        private static string getSerial()
         {
             ManagementObjectSearcher searcher =
                 new ManagementObjectSearcher("SELECT Product, SerialNumber FROM Win32_BaseBoard");
@@ -69,31 +69,63 @@ namespace ClassLibrary1
         /// Executes external process to call MsInfo32.exe, saves the information to
         /// txt file with serial number name
         /// </summary>
-        private static void extractMsInfo32()
+        private static void extractMsInfo32(string dirName)
         {
             Process extProcess = new Process();
             extProcess.StartInfo.FileName = "msinfo32.exe";
-            extProcess.StartInfo.Arguments = "/report " + @".\" + retrieveSerial() + ".txt";
+            extProcess.StartInfo.Arguments = "/report " + @".\" + dirName + @"\SystemInfo.txt";
             extProcess.Start();
         }
 
         /// <summary>
         /// method gets startup programs to text file
         /// </summary>
-        private static void getStartups()
+        private static void getStartups(string dirName)
         {
             using (PowerShell ps = PowerShell.Create())
             {
-                ps.AddScript("wmic startup > " + @".\" + retrieveSerial() + "_startup.txt");
+                ps.AddScript("wmic startup > " + @".\" + dirName + @"\StartupPrograms.txt");
                 ps.Invoke();
             }
 
         }
+
+        private static void startupProg(string dirName)
+        {
+            RegistryKey regKey = Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\RunOnce");
+            String[] sarray = regKey.GetValueNames();
+
+            foreach(String sa in sarray)
+            {
+                File.AppendAllText(@".\" + dirName + @"\programtxt2.txt", sa); 
+            }
+            foreach(String s in regKey.GetSubKeyNames())
+            {
+                File.AppendAllText(@".\" + dirName + @"\programtxt.txt", s);
+            }
+
+            //getValueNames
+
+
+        }
+
+        private static void taskMgrStartup()
+        {
+        using (PowerShell ps = PowerShell.Create())
+            {
+                ps.AddScript("taskmgr");
+                ps.Invoke();
+            }
+        }
         public static void Main()
         {
-            EvtExportLog(IntPtr.Zero, "System", "*", @".\sys.evtx", EventExportLogFlags.ChannelPath);
-            extractMsInfo32();
-            getStartups();
+            string serialID = getSerial();
+            Directory.CreateDirectory(serialID);
+            taskMgrStartup();
+            startupProg(serialID);
+            EvtExportLog(IntPtr.Zero, "System", "*", @".\" + serialID + @"\SystemEventLogs.evtx", EventExportLogFlags.ChannelPath);
+            extractMsInfo32(serialID);
+            getStartups(serialID);
         }
     }
 }
